@@ -1,0 +1,122 @@
+.container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.dateInput {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.saveButton {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.saveButton:hover {
+  opacity: 0.9;
+}
+
+.saveButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.studentRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  /* box-shadow: 0 2px 4px rgba(0,0,0,0.02); */
+}
+
+.studentName {
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.statusGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.statusButton {
+  padding: 0.8rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+  color: var(--foreground);
+  flex: 1; /* Stretch on smaller screens if needed, or just be good targets */
+}
+
+.statusButton:hover {
+  background-color: var(--secondary);
+}
+
+/* Selected States */
+.statusButton.present.selected {
+  background-color: var(--success);
+  color: white;
+  border-color: var(--success);
+}
+
+.statusButton.late.selected {
+  background-color: var(--warning);
+  color: black;
+  border-color: var(--warning);
+}
+
+.statusButton.absent.selected {
+  background-color: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+.statusButton.justified.selected {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}

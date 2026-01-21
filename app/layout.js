@@ -1,4 +1,5 @@
 import "./globals.css";
+import Sidebar from "./components/Sidebar";
 
 export const metadata = {
   title: "Class Attendance App",
@@ -9,7 +10,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        {children}
+        <Sidebar />
+        <main>{children}</main>
       </body>
     </html>
   );
