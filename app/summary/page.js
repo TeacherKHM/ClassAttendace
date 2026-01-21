@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import { getStudents, getAttendance } from "@/lib/storage";
+import CalendarView from "./CalendarView";
 
 export default function SummaryPage() {
   const [data, setData] = useState({ students: [], records: {}, dates: [] });
   const [isClient, setIsClient] = useState(false);
+  const [viewMode, setViewMode] = useState("matrix"); // "matrix" | "calendar"
 
   useEffect(() => {
     setIsClient(true);
@@ -61,49 +63,70 @@ export default function SummaryPage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>Summary</h1>
-        <button className={styles.exportButton} onClick={handleExport}>
-          Export to Sheets
-        </button>
+        
+        <div className={styles.controls}>
+          <div className={styles.toggleGroup}>
+            <button 
+              className={`${styles.toggleButton} ${viewMode === "matrix" ? styles.active : ""}`}
+              onClick={() => setViewMode("matrix")}
+            >
+              Matrix
+            </button>
+            <button 
+              className={`${styles.toggleButton} ${viewMode === "calendar" ? styles.active : ""}`}
+              onClick={() => setViewMode("calendar")}
+            >
+              Calendar
+            </button>
+          </div>
+          <button className={styles.exportButton} onClick={handleExport}>
+            Export to Sheets
+          </button>
+        </div>
       </div>
 
-      <div className={styles.tableWrapper}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Student</th>
-              <th>Late</th>
-              <th>Absent</th>
-              {data.dates.map(date => (
-                <th key={date}>{date.slice(5)}</th> // Show MM-DD
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.students.map(student => {
-              const stats = getStats(student.id);
-              return (
-                <tr key={student.id}>
-                  <td>{student.name}</td>
-                  <td>{stats.Late}</td>
-                  <td>{stats.Absent}</td>
-                  {data.dates.map(date => {
-                    const status = data.records[date]?.[student.id];
-                    return (
-                      <td key={date}>
-                        {status ? (
-                          <div className={`${styles.cell} ${styles[status.toLowerCase()]}`}>
-                            {status[0]} 
-                          </div>
-                        ) : "-"}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      {viewMode === "matrix" ? (
+        <div className={styles.tableWrapper}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Late</th>
+                <th>Absent</th>
+                {data.dates.map(date => (
+                  <th key={date}>{date.slice(5)}</th> // Show MM-DD
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.students.map(student => {
+                const stats = getStats(student.id);
+                return (
+                  <tr key={student.id}>
+                    <td>{student.name}</td>
+                    <td>{stats.Late}</td>
+                    <td>{stats.Absent}</td>
+                    {data.dates.map(date => {
+                      const status = data.records[date]?.[student.id];
+                      return (
+                        <td key={date}>
+                          {status ? (
+                            <div className={`${styles.cell} ${styles[status.toLowerCase()]}`}>
+                              {status[0]} 
+                            </div>
+                          ) : "-"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <CalendarView data={data.records} students={data.students} />
+      )}
     </div>
   );
 }

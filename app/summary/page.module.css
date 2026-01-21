@@ -9,6 +9,38 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  flex-wrap: wrap; 
+  gap: 1rem;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.toggleGroup {
+  display: flex;
+  background: var(--secondary);
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.toggleButton {
+  background: transparent;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--foreground);
+  transition: all 0.2s;
+}
+
+.toggleButton.active {
+  background: var(--background);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  font-weight: 600;
 }
 
 .title {
