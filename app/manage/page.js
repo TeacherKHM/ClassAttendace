@@ -7,6 +7,8 @@ import { getStudents, saveStudents } from "@/lib/storage";
 export default function ManagePage() {
   const [students, setStudents] = useState([]);
   const [newName, setNewName] = useState("");
+  const [bulkList, setBulkList] = useState("");
+  const [mode, setMode] = useState("single"); // "single" | "bulk"
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -25,6 +27,29 @@ export default function ManagePage() {
     setStudents(updated);
     saveStudents(updated);
     setNewName("");
+  };
+
+  const handleBulkAdd = () => {
+    if (!bulkList.trim()) return;
+    
+    // Split by comma or newline
+    const names = bulkList
+      .split(/[\n,]/)
+      .map(n => n.trim())
+      .filter(n => n.length > 0);
+    
+    if (names.length === 0) return;
+
+    const newStudents = names.map((name, index) => ({
+      id: (Date.now() + index).toString(),
+      name: name,
+    }));
+
+    const updated = [...students, ...newStudents];
+    setStudents(updated);
+    saveStudents(updated);
+    setBulkList("");
+    setMode("single"); // Switch back to see list
   };
 
   const handleDelete = (id) => {
@@ -52,18 +77,49 @@ export default function ManagePage() {
     <div className={styles.container}>
       <h1 className={styles.title}>Manage Students</h1>
 
-      <form className={styles.form} onSubmit={handleAdd}>
-        <input
-          type="text"
-          className={styles.input}
-          placeholder="Enter student name..."
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-        />
-        <button type="submit" className={styles.addButton}>
-          Add Student
+      <div className={styles.viewToggle}>
+        <button
+          className={`${styles.toggleBtn} ${mode === "single" ? styles.active : ""}`}
+          onClick={() => setMode("single")}
+        >
+          Single Add
         </button>
-      </form>
+        <button
+          className={`${styles.toggleBtn} ${mode === "bulk" ? styles.active : ""}`}
+          onClick={() => setMode("bulk")}
+        >
+          Bulk Import
+        </button>
+      </div>
+
+      {mode === "single" ? (
+        <form className={styles.form} onSubmit={handleAdd}>
+          <input
+            type="text"
+            className={styles.input}
+            placeholder="Enter student name..."
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+          />
+          <button type="submit" className={styles.addButton}>
+            Add Student
+          </button>
+        </form>
+      ) : (
+        <div className={styles.bulkForm}>
+          <textarea
+            className={styles.textarea}
+            placeholder="Paste names here, separated by commas or new lines...&#10;Example:&#10;Alice Johnson&#10;Bob Smith, Charlie Brown"
+            value={bulkList}
+            onChange={(e) => setBulkList(e.target.value)}
+          />
+          <div className={styles.bulkActions}>
+            <button className={styles.addButton} onClick={handleBulkAdd}>
+              Import Names
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className={styles.list}>
         {students.map((student) => (
