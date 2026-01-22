@@ -6,7 +6,20 @@ import { getStudents, saveStudents } from "@/lib/storage";
 
 export default function ManagePage() {
   const [students, setStudents] = useState([]);
+  
+  // Add Form State
   const [newName, setNewName] = useState("");
+  const [classroom, setClassroom] = useState("");
+  const [workshop, setWorkshop] = useState("");
+  const [specialization, setSpecialization] = useState("");
+
+  // Edit Modal State
+  const [editingStudent, setEditingStudent] = useState(null);
+  const [editName, setEditName] = useState("");
+  const [editClassroom, setEditClassroom] = useState("");
+  const [editWorkshop, setEditWorkshop] = useState("");
+  const [editSpecialization, setEditSpecialization] = useState("");
+
   const [bulkList, setBulkList] = useState("");
   const [mode, setMode] = useState("single"); // "single" | "bulk"
   const [isClient, setIsClient] = useState(false);
@@ -22,34 +35,39 @@ export default function ManagePage() {
     const newStudent = {
       id: Date.now().toString(),
       name: newName.trim(),
+      classroom,
+      workshop,
+      specialization
     };
     const updated = [...students, newStudent];
     setStudents(updated);
     saveStudents(updated);
+    
+    // Reset Form
     setNewName("");
+    setClassroom("");
+    setWorkshop("");
+    setSpecialization("");
   };
 
   const handleBulkAdd = () => {
     if (!bulkList.trim()) return;
-    
-    // Split by comma or newline
-    const names = bulkList
-      .split(/[\n,]/)
-      .map(n => n.trim())
-      .filter(n => n.length > 0);
-    
+    const names = bulkList.split(/[\n,]/).map(n => n.trim()).filter(n => n.length > 0);
     if (names.length === 0) return;
 
     const newStudents = names.map((name, index) => ({
       id: (Date.now() + index).toString(),
       name: name,
+      classroom: "",
+      workshop: "",
+      specialization: ""
     }));
 
     const updated = [...students, ...newStudents];
     setStudents(updated);
     saveStudents(updated);
     setBulkList("");
-    setMode("single"); // Switch back to see list
+    setMode("single");
   };
 
   const handleDelete = (id) => {
@@ -59,16 +77,30 @@ export default function ManagePage() {
     saveStudents(updated);
   };
 
-  const handleEdit = (id) => {
-    const student = students.find((s) => s.id === id);
-    const name = prompt("Enter new name:", student.name);
-    if (name && name.trim()) {
-      const updated = students.map((s) =>
-        s.id === id ? { ...s, name: name.trim() } : s
-      );
-      setStudents(updated);
-      saveStudents(updated);
-    }
+  const openEditModal = (student) => {
+    setEditingStudent(student);
+    setEditName(student.name);
+    setEditClassroom(student.classroom || "");
+    setEditWorkshop(student.workshop || "");
+    setEditSpecialization(student.specialization || "");
+  };
+
+  const handleSaveEdit = (e) => {
+    e.preventDefault();
+    if (!editName.trim()) return;
+
+    const updated = students.map((s) =>
+      s.id === editingStudent.id ? { 
+        ...s, 
+        name: editName.trim(),
+        classroom: editClassroom,
+        workshop: editWorkshop,
+        specialization: editSpecialization
+      } : s
+    );
+    setStudents(updated);
+    saveStudents(updated);
+    setEditingStudent(null);
   };
 
   if (!isClient) return null;
@@ -93,14 +125,40 @@ export default function ManagePage() {
       </div>
 
       {mode === "single" ? (
-        <form className={styles.form} onSubmit={handleAdd}>
-          <input
-            type="text"
-            className={styles.input}
-            placeholder="Enter student name..."
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-          />
+        <form className={styles.formColumn} onSubmit={handleAdd}>
+          <div className={styles.formRow}>
+            <input
+              type="text"
+              className={styles.input}
+              placeholder="Full Name"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              required
+            />
+          </div>
+          <div className={styles.formRow}>
+             <input
+              type="text"
+              className={styles.input}
+              placeholder="Classroom (e.g. Intl)"
+              value={classroom}
+              onChange={(e) => setClassroom(e.target.value)}
+            />
+            <input
+              type="text"
+              className={styles.input}
+              placeholder="Workshop"
+              value={workshop}
+              onChange={(e) => setWorkshop(e.target.value)}
+            />
+            <input
+              type="text"
+              className={styles.input}
+              placeholder="Specialization"
+              value={specialization}
+              onChange={(e) => setSpecialization(e.target.value)}
+            />
+          </div>
           <button type="submit" className={styles.addButton}>
             Add Student
           </button>
@@ -109,7 +167,7 @@ export default function ManagePage() {
         <div className={styles.bulkForm}>
           <textarea
             className={styles.textarea}
-            placeholder="Paste names here, separated by commas or new lines...&#10;Example:&#10;Alice Johnson&#10;Bob Smith, Charlie Brown"
+            placeholder="Paste names here, separated by commas or new lines..."
             value={bulkList}
             onChange={(e) => setBulkList(e.target.value)}
           />
@@ -124,12 +182,19 @@ export default function ManagePage() {
       <div className={styles.list}>
         {students.map((student) => (
           <div key={student.id} className={styles.item}>
-            <span className={styles.name}>{student.name}</span>
+            <div className={styles.info}>
+              <span className={styles.name}>{student.name}</span>
+              <div className={styles.details}>
+                {student.classroom && <span className={styles.tag}>{student.classroom}</span>}
+                {student.workshop && <span className={styles.tag}>{student.workshop}</span>}
+                {student.specialization && <span className={styles.tag}>{student.specialization}</span>}
+              </div>
+            </div>
             <div className={styles.actions}>
               <button
                 className={styles.editButton}
-                onClick={() => handleEdit(student.id)}
-                title="Edit"
+                onClick={() => openEditModal(student)}
+                title="Edit Details"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
               </button>
@@ -144,6 +209,51 @@ export default function ManagePage() {
           </div>
         ))}
       </div>
+
+      {/* Edit Modal */}
+      {editingStudent && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h2 className={styles.modalTitle}>Edit Student</h2>
+            <form onSubmit={handleSaveEdit}>
+              <div className={styles.modalBody}>
+                <label>Name</label>
+                <input 
+                  className={styles.input} 
+                  value={editName} 
+                  onChange={(e) => setEditName(e.target.value)} 
+                  required 
+                />
+                
+                <label>Classroom</label>
+                <input 
+                  className={styles.input} 
+                  value={editClassroom} 
+                  onChange={(e) => setEditClassroom(e.target.value)} 
+                />
+                
+                <label>Workshop</label>
+                <input 
+                  className={styles.input} 
+                  value={editWorkshop} 
+                  onChange={(e) => setEditWorkshop(e.target.value)} 
+                />
+                
+                <label>Specialization</label>
+                <input 
+                  className={styles.input} 
+                  value={editSpecialization} 
+                  onChange={(e) => setEditSpecialization(e.target.value)} 
+                />
+              </div>
+              <div className={styles.modalActions}>
+                <button type="button" className={styles.cancelBtn} onClick={() => setEditingStudent(null)}>Cancel</button>
+                <button type="submit" className={styles.saveBtn}>Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

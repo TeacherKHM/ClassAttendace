@@ -117,6 +117,9 @@
   width: 90%;
   max-width: 400px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .modalHeader {
@@ -124,6 +127,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  flex-shrink: 0;
 }
 
 .closeButton {
@@ -138,6 +142,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+  overflow-y: auto;
+  padding-right: 0.5rem; /* Space for scrollbar */
 }
 
 .detailItem {

@@ -1,7 +1,6 @@
 .container {
   padding: 2rem;
-  max-width: 100%;
-  overflow-x: auto;
+  padding-bottom: 4rem;
 }
 
 .header {
@@ -9,8 +8,13 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
   gap: 1rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 .controls {
@@ -43,78 +47,145 @@
   font-weight: 600;
 }
 
-.title {
-  font-size: 2rem;
-  font-weight: 700;
-}
-
 .exportButton {
-  background-color: var(--success);
+  background-color: var(--primary);
   color: white;
   border: none;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1rem;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
 }
 
-.exportButton:hover {
-  opacity: 0.9;
+.filterBar {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  background: var(--secondary);
+  padding: 1rem;
+  border-radius: 12px;
+  align-items: center;
+}
+
+.filterBar label {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filterBar input {
+  padding: 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--background);
+  color: var(--foreground);
 }
 
 .tableWrapper {
+  overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  max-width: 100%;
 }
 
 .table {
   width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
-
-.table th,
-.table td {
-  padding: 0.8rem;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
+  border-collapse: separate; /* Required for sticky */
+  border-spacing: 0;
+  min-width: 1000px;
 }
 
 .table th {
-  background-color: var(--secondary);
+  background: var(--secondary);
+  padding: 1rem;
+  text-align: center;
   font-weight: 600;
+  white-space: nowrap;
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.table td {
+  padding: 0.6rem;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Sticky First Column */
+.stickyCol {
+  position: sticky;
+  left: 0;
+  background: var(--background);
+  z-index: 20;
+  border-right: 2px solid var(--border);
+  text-align: left !important;
+  min-width: 150px;
+}
+
+.table th.stickyCol {
+  z-index: 30;
+  background: var(--secondary);
+}
+
+.studentName {
+  font-weight: 600;
+}
+
+.metaCell {
+  font-size: 0.85rem;
+  color: #666;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.table th:first-child,
-.table td:first-child {
-  position: sticky;
-  left: 0;
-  background-color: var(--background);
-  z-index: 10;
-  border-right: 1px solid var(--border);
-}
-
-.table th:first-child {
-  background-color: var(--secondary);
-  z-index: 20;
-}
-
 .cell {
-  text-align: center;
-  padding: 4px 8px;
-  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 700;
+  margin: 0 auto;
 }
 
-.present { background-color: rgba(52, 199, 89, 0.2); color: var(--success); }
-.late { background-color: rgba(255, 204, 0, 0.2); color: #b38f00; }
-.absent { background-color: rgba(255, 59, 48, 0.2); color: var(--danger); }
-.justified { background-color: rgba(0, 122, 255, 0.2); color: var(--primary); }
+.cell.present { background: rgba(52, 199, 89, 0.2); color: var(--success); }
+.cell.late { background: rgba(255, 204, 0, 0.2); color: #b38f00; }
+.cell.absent { background: rgba(255, 59, 48, 0.2); color: var(--danger); }
+.cell.justified { background: rgba(0, 122, 255, 0.2); color: var(--primary); }
+
+.countBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  min-width: 32px;
+}
+
+.blueBadge {
+  background: rgba(0, 122, 255, 0.15);
+  color: var(--primary);
+}
+
+.overdue {
+  background: rgba(255, 59, 48, 0.2);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}
 
 @media (prefers-color-scheme: dark) {
-  .late { color: var(--warning); }
+  .countBadge { background: rgba(255, 255, 255, 0.1); }
+  .blueBadge { background: rgba(10, 132, 255, 0.2); color: #64d2ff; }
+  .stickyCol { background: var(--background); }
+  .table th.stickyCol { background: var(--secondary); }
 }
