@@ -9,9 +9,10 @@ export default function ManagePage() {
   
   // Add Form State
   const [newName, setNewName] = useState("");
-  const [classroom, setClassroom] = useState("");
-  const [workshop, setWorkshop] = useState("");
-  const [specialization, setSpecialization] = useState("");
+  const [classroom, setClassroom] = useState("GAC");
+  const [workshop, setWorkshop] = useState("Music");
+  const [specialization, setSpecialization] = useState("Debate");
+  const [preceptor, setPreceptor] = useState("");
 
   // Edit Modal State
   const [editingStudent, setEditingStudent] = useState(null);
@@ -19,6 +20,7 @@ export default function ManagePage() {
   const [editClassroom, setEditClassroom] = useState("");
   const [editWorkshop, setEditWorkshop] = useState("");
   const [editSpecialization, setEditSpecialization] = useState("");
+  const [editPreceptor, setEditPreceptor] = useState("");
 
   const [bulkList, setBulkList] = useState("");
   const [mode, setMode] = useState("single"); // "single" | "bulk"
@@ -40,7 +42,8 @@ export default function ManagePage() {
       name: newName.trim(),
       classroom,
       workshop,
-      specialization
+      specialization,
+      preceptor: preceptor.trim()
     };
     await saveStudents([newStudent]);
     // Refresh students list after adding to get the new UUID from Supabase
@@ -49,9 +52,11 @@ export default function ManagePage() {
     
     // Reset Form
     setNewName("");
-    setClassroom("");
-    setWorkshop("");
-    setSpecialization("");
+    setPreceptor("");
+    // Keep selects as they are or reset to default
+    setClassroom("GAC");
+    setWorkshop("Music");
+    setSpecialization("Debate");
   };
 
   const handleBulkAdd = async () => {
@@ -61,9 +66,10 @@ export default function ManagePage() {
 
     const newStudentsData = names.map((name) => ({
       name: name,
-      classroom: "",
-      workshop: "",
-      specialization: ""
+      classroom: "GAC",
+      workshop: "Music",
+      specialization: "Debate",
+      preceptor: ""
     }));
 
     await saveStudents(newStudentsData);
@@ -89,6 +95,7 @@ export default function ManagePage() {
     setEditClassroom(student.classroom || "");
     setEditWorkshop(student.workshop || "");
     setEditSpecialization(student.specialization || "");
+    setEditPreceptor(student.preceptor || "");
   };
 
   const handleSaveEdit = async (e) => {
@@ -100,7 +107,8 @@ export default function ManagePage() {
         name: editName.trim(),
         classroom: editClassroom,
         workshop: editWorkshop,
-        specialization: editSpecialization
+        specialization: editSpecialization,
+        preceptor: editPreceptor.trim()
       };
 
     const updated = students.map((s) =>
@@ -143,29 +151,43 @@ export default function ManagePage() {
               onChange={(e) => setNewName(e.target.value)}
               required
             />
+            <input
+              type="text"
+              className={styles.input}
+              placeholder="Preceptor"
+              value={preceptor}
+              onChange={(e) => setPreceptor(e.target.value)}
+            />
           </div>
           <div className={styles.formRow}>
-             <input
-              type="text"
-              className={styles.input}
-              placeholder="Classroom (e.g. Intl)"
-              value={classroom}
+            <select 
+              className={styles.input} 
+              value={classroom} 
               onChange={(e) => setClassroom(e.target.value)}
-            />
-            <input
-              type="text"
-              className={styles.input}
-              placeholder="Workshop"
-              value={workshop}
+            >
+              <option value="GAC">GAC</option>
+              <option value="INT">INT</option>
+            </select>
+            <select 
+              className={styles.input} 
+              value={workshop} 
               onChange={(e) => setWorkshop(e.target.value)}
-            />
-            <input
-              type="text"
-              className={styles.input}
-              placeholder="Specialization"
-              value={specialization}
+            >
+              <option value="Music">Music</option>
+              <option value="Cinema">Cinema</option>
+              <option value="Art">Art</option>
+              <option value="Carpinteria">Carpinteria</option>
+            </select>
+            <select 
+              className={styles.input} 
+              value={specialization} 
               onChange={(e) => setSpecialization(e.target.value)}
-            />
+            >
+              <option value="Debate">Debate</option>
+              <option value="Mechatronics">Mechatronics</option>
+              <option value="Business">Business</option>
+              <option value="Laboratory">Laboratory</option>
+            </select>
           </div>
           <button type="submit" className={styles.addButton}>
             Add Student
@@ -196,6 +218,7 @@ export default function ManagePage() {
                 {student.classroom && <span className={styles.tag}>{student.classroom}</span>}
                 {student.workshop && <span className={styles.tag}>{student.workshop}</span>}
                 {student.specialization && <span className={styles.tag}>{student.specialization}</span>}
+                {student.preceptor && <span className={`${styles.tag} ${styles.preceptorTag}`}>P: {student.preceptor}</span>}
               </div>
             </div>
             <div className={styles.actions}>
@@ -234,24 +257,44 @@ export default function ManagePage() {
                 />
                 
                 <label>Classroom</label>
-                <input 
+                <select 
                   className={styles.input} 
                   value={editClassroom} 
-                  onChange={(e) => setEditClassroom(e.target.value)} 
-                />
+                  onChange={(e) => setEditClassroom(e.target.value)}
+                >
+                  <option value="GAC">GAC</option>
+                  <option value="INT">INT</option>
+                </select>
                 
                 <label>Workshop</label>
-                <input 
+                <select 
                   className={styles.input} 
                   value={editWorkshop} 
-                  onChange={(e) => setEditWorkshop(e.target.value)} 
-                />
+                  onChange={(e) => setEditWorkshop(e.target.value)}
+                >
+                  <option value="Music">Music</option>
+                  <option value="Cinema">Cinema</option>
+                  <option value="Art">Art</option>
+                  <option value="Carpinteria">Carpinteria</option>
+                </select>
                 
                 <label>Specialization</label>
-                <input 
+                <select 
                   className={styles.input} 
                   value={editSpecialization} 
-                  onChange={(e) => setEditSpecialization(e.target.value)} 
+                  onChange={(e) => setEditSpecialization(e.target.value)}
+                >
+                  <option value="Debate">Debate</option>
+                  <option value="Mechatronics">Mechatronics</option>
+                  <option value="Business">Business</option>
+                  <option value="Laboratory">Laboratory</option>
+                </select>
+
+                <label>Preceptor</label>
+                <input 
+                  className={styles.input} 
+                  value={editPreceptor} 
+                  onChange={(e) => setEditPreceptor(e.target.value)} 
                 />
               </div>
               <div className={styles.modalActions}>
