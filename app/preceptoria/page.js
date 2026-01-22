@@ -22,7 +22,11 @@ export default function PreceptoriaPage() {
 
   useEffect(() => {
     setIsClient(true);
-    setStudents(getStudents());
+    const loadInitialData = async () => {
+      const data = await getStudents();
+      setStudents(data);
+    };
+    loadInitialData();
     const today = new Date().toISOString().split("T")[0];
     setSessionDate(today);
   }, []);
@@ -31,14 +35,15 @@ export default function PreceptoriaPage() {
     s.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSelectStudent = (student) => {
+  const handleSelectStudent = async (student) => {
     setSelectedStudent(student);
-    setLogs(getStudentPreceptoria(student.id));
+    const studentLogs = await getStudentPreceptoria(student.id);
+    setLogs(studentLogs);
     setShowAddModal(false);
     setViewLog(null);
   };
 
-  const handleAddSession = (e) => {
+  const handleAddSession = async (e) => {
     e.preventDefault();
     if (!sessionNotes.trim()) return;
 
@@ -49,7 +54,7 @@ export default function PreceptoriaPage() {
       notes: sessionNotes
     };
 
-    addStudentPreceptoria(selectedStudent.id, newSession);
+    await addStudentPreceptoria(selectedStudent.id, newSession);
     setLogs([newSession, ...logs]);
     
     // Reset and Close

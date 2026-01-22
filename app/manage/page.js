@@ -26,22 +26,26 @@ export default function ManagePage() {
 
   useEffect(() => {
     setIsClient(true);
-    setStudents(getStudents());
+    const loadStudents = async () => {
+      const data = await getStudents();
+      setStudents(data);
+    };
+    loadStudents();
   }, []);
 
-  const handleAdd = (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
     if (!newName.trim()) return;
     const newStudent = {
-      id: Date.now().toString(),
       name: newName.trim(),
       classroom,
       workshop,
       specialization
     };
-    const updated = [...students, newStudent];
-    setStudents(updated);
-    saveStudents(updated);
+    await saveStudents([newStudent]);
+    // Refresh students list after adding to get the new UUID from Supabase
+    const data = await getStudents();
+    setStudents(data);
     
     // Reset Form
     setNewName("");
@@ -50,31 +54,33 @@ export default function ManagePage() {
     setSpecialization("");
   };
 
-  const handleBulkAdd = () => {
+  const handleBulkAdd = async () => {
     if (!bulkList.trim()) return;
     const names = bulkList.split(/[\n,]/).map(n => n.trim()).filter(n => n.length > 0);
     if (names.length === 0) return;
 
-    const newStudents = names.map((name, index) => ({
-      id: (Date.now() + index).toString(),
+    const newStudentsData = names.map((name) => ({
       name: name,
       classroom: "",
       workshop: "",
       specialization: ""
     }));
 
-    const updated = [...students, ...newStudents];
-    setStudents(updated);
-    saveStudents(updated);
+    await saveStudents(newStudentsData);
+    const data = await getStudents();
+    setStudents(data);
     setBulkList("");
     setMode("single");
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!confirm("Are you sure? This will remove the student from future lists.")) return;
     const updated = students.filter((s) => s.id !== id);
     setStudents(updated);
-    saveStudents(updated);
+    // Add deleteStudent to storage.js if not there, or use saveStudents with updated list 
+    // but better to have a dedicated delete. I added deleteStudent to storage.js.
+    const { deleteStudent } = await import("@/lib/storage");
+    await deleteStudent(id);
   };
 
   const openEditModal = (student) => {
@@ -85,21 +91,23 @@ export default function ManagePage() {
     setEditSpecialization(student.specialization || "");
   };
 
-  const handleSaveEdit = (e) => {
+  const handleSaveEdit = async (e) => {
     e.preventDefault();
     if (!editName.trim()) return;
 
-    const updated = students.map((s) =>
-      s.id === editingStudent.id ? { 
-        ...s, 
+    const updatedStudent = { 
+        ...editingStudent, 
         name: editName.trim(),
         classroom: editClassroom,
         workshop: editWorkshop,
         specialization: editSpecialization
-      } : s
+      };
+
+    const updated = students.map((s) =>
+      s.id === editingStudent.id ? updatedStudent : s
     );
     setStudents(updated);
-    saveStudents(updated);
+    await saveStudents([updatedStudent]);
     setEditingStudent(null);
   };
 

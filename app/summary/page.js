@@ -15,18 +15,21 @@ export default function SummaryPage() {
 
   useEffect(() => {
     setIsClient(true);
-    const students = getStudents();
-    const records = getAttendance();
-    const preceptoria = getPreceptoria();
-    const dates = Object.keys(records).sort().reverse();
-    
-    // Default: This Month
-    const today = new Date();
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-    const lastDay = today.toISOString().split('T')[0];
+    const fetchData = async () => {
+      const students = await getStudents();
+      const records = await getAttendance();
+      const preceptoria = await getPreceptoria();
+      const dates = Object.keys(records).sort().reverse();
+      
+      // Default: This Month
+      const today = new Date();
+      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+      const lastDay = today.toISOString().split('T')[0];
 
-    setData({ students, records, dates, preceptoria });
-    setDateRange({ start: firstDay, end: lastDay });
+      setData({ students, records, dates, preceptoria });
+      setDateRange({ start: firstDay, end: lastDay });
+    };
+    fetchData();
   }, []);
 
   const getFilteredDates = () => {

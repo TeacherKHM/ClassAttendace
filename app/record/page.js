@@ -13,18 +13,25 @@ export default function RecordPage() {
 
   useEffect(() => {
     setIsClient(true);
-    const today = new Date().toISOString().split("T")[0];
-    setDate(today);
-    setStudents(getStudents());
-    const savedData = getAttendanceForDate(today);
-    setAttendance(savedData || {});
+    const loadInitialData = async () => {
+      const today = new Date().toISOString().split("T")[0];
+      setDate(today);
+      const studentData = await getStudents();
+      setStudents(studentData);
+      const savedData = await getAttendanceForDate(today);
+      setAttendance(savedData || {});
+    };
+    loadInitialData();
   }, []);
 
   useEffect(() => {
     if (!date) return;
-    const savedData = getAttendanceForDate(date);
-    setAttendance(savedData || {});
-    setSaved(false);
+    const loadAttendance = async () => {
+      const savedData = await getAttendanceForDate(date);
+      setAttendance(savedData || {});
+      setSaved(false);
+    };
+    loadAttendance();
   }, [date]);
 
   const handleStatusChange = (studentId, status) => {
@@ -35,8 +42,8 @@ export default function RecordPage() {
     setSaved(false);
   };
 
-  const handleSave = () => {
-    saveAttendanceForDate(date, attendance);
+  const handleSave = async () => {
+    await saveAttendanceForDate(date, attendance);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
