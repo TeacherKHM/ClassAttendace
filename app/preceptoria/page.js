@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import styles from "./page.module.css";
-import { getStudents, getStudentPreceptoria, addStudentPreceptoria } from "@/lib/storage";
+import { addStudentPreceptoria } from "@/lib/storage";
+import { useData } from "@/app/context/DataContext";
 
 export default function PreceptoriaPage() {
-  const [students, setStudents] = useState([]);
+  const { students, preceptoria, refreshData, loading: contextLoading } = useData();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedStudent, setSelectedStudent] = useState(null);
-  const [logs, setLogs] = useState([]);
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [isClient, setIsClient] = useState(false);
   
   // Modals
@@ -22,47 +22,53 @@ export default function PreceptoriaPage() {
 
   useEffect(() => {
     setIsClient(true);
-    const loadInitialData = async () => {
-      const data = await getStudents();
-      setStudents(data);
-    };
-    loadInitialData();
     const today = new Date().toISOString().split("T")[0];
     setSessionDate(today);
   }, []);
+
+  const selectedStudent = useMemo(() => 
+    students.find(s => s.id === selectedStudentId),
+    [students, selectedStudentId]
+  );
+
+  const logs = useMemo(() => 
+    selectedStudentId ? (preceptoria[selectedStudentId] || []) : [],
+    [preceptoria, selectedStudentId]
+  );
 
   const filteredStudents = students.filter(s => 
     s.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSelectStudent = async (student) => {
-    setSelectedStudent(student);
-    const studentLogs = await getStudentPreceptoria(student.id);
-    setLogs(studentLogs);
+  const handleSelectStudent = (student) => {
+    setSelectedStudentId(student.id);
     setShowAddModal(false);
     setViewLog(null);
   };
 
   const handleAddSession = async (e) => {
     e.preventDefault();
-    if (!sessionNotes.trim()) return;
+    if (!sessionNotes.trim() || !selectedStudentId) return;
 
     const newSession = {
-      id: Date.now().toString(),
       date: sessionDate,
       type: sessionType,
       notes: sessionNotes
     };
 
-    await addStudentPreceptoria(selectedStudent.id, newSession);
-    setLogs([newSession, ...logs]);
+    await addStudentPreceptoria(selectedStudentId, newSession);
+    await refreshData();
     
     // Reset and Close
     setSessionNotes("");
     setShowAddModal(false);
   };
 
-  if (!isClient) return null;
+  if (!isClient || contextLoading) return (
+    <div className={styles.container}>
+      <h1 className={styles.title}>Loading Preceptoría...</h1>
+    </div>
+  );
 
   return (
     <div className={styles.container}>

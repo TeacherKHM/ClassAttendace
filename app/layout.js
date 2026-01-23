@@ -1,6 +1,7 @@
 import "./globals.css";
 import Sidebar from "./components/Sidebar";
 import { DataProvider } from "./context/DataContext";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
   title: "Class Attendance App",
@@ -14,6 +15,7 @@ export default function RootLayout({ children }) {
         <DataProvider>
           <Sidebar />
           <main>{children}</main>
+          <Analytics />
         </DataProvider>
       </body>
     </html>
