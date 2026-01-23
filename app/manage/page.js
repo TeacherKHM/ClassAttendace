@@ -9,9 +9,9 @@ export default function ManagePage() {
   
   // Add Form State
   const [newName, setNewName] = useState("");
-  const [classroom, setClassroom] = useState("GAC");
-  const [workshop, setWorkshop] = useState("Music");
-  const [specialization, setSpecialization] = useState("Debate");
+  const [classroom, setClassroom] = useState("");
+  const [workshop, setWorkshop] = useState("");
+  const [specialization, setSpecialization] = useState("");
   const [preceptor, setPreceptor] = useState("");
 
   // Edit Modal State
@@ -24,6 +24,7 @@ export default function ManagePage() {
 
   const [bulkList, setBulkList] = useState("");
   const [mode, setMode] = useState("single"); // "single" | "bulk"
+  const [searchQuery, setSearchQuery] = useState("");
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -34,6 +35,17 @@ export default function ManagePage() {
     };
     loadStudents();
   }, []);
+
+  const filteredStudents = students.filter((student) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      student.name.toLowerCase().includes(query) ||
+      (student.preceptor && student.preceptor.toLowerCase().includes(query)) ||
+      (student.classroom && student.classroom.toLowerCase().includes(query)) ||
+      (student.workshop && student.workshop.toLowerCase().includes(query)) ||
+      (student.specialization && student.specialization.toLowerCase().includes(query))
+    );
+  });
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -53,10 +65,10 @@ export default function ManagePage() {
     // Reset Form
     setNewName("");
     setPreceptor("");
-    // Keep selects as they are or reset to default
-    setClassroom("GAC");
-    setWorkshop("Music");
-    setSpecialization("Debate");
+    // Reset selects to force explicit selection for the next student
+    setClassroom("");
+    setWorkshop("");
+    setSpecialization("");
   };
 
   const handleBulkAdd = async () => {
@@ -165,6 +177,7 @@ export default function ManagePage() {
               value={classroom} 
               onChange={(e) => setClassroom(e.target.value)}
             >
+              <option value="">(None / Unknown Classroom)</option>
               <option value="GAC">GAC</option>
               <option value="INT">INT</option>
             </select>
@@ -173,6 +186,7 @@ export default function ManagePage() {
               value={workshop} 
               onChange={(e) => setWorkshop(e.target.value)}
             >
+              <option value="">(None / Unknown Workshop)</option>
               <option value="Music">Music</option>
               <option value="Cinema">Cinema</option>
               <option value="Art">Art</option>
@@ -183,6 +197,7 @@ export default function ManagePage() {
               value={specialization} 
               onChange={(e) => setSpecialization(e.target.value)}
             >
+              <option value="">(None / Unknown Specialization)</option>
               <option value="Debate">Debate</option>
               <option value="Mechatronics">Mechatronics</option>
               <option value="Business">Business</option>
@@ -209,8 +224,26 @@ export default function ManagePage() {
         </div>
       )}
 
+      <div className={styles.searchContainer}>
+        <div className={styles.searchWrapper}>
+          <svg className={styles.searchIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="Search by name, preceptor, class, workshop..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button className={styles.clearSearch} onClick={() => setSearchQuery("")} title="Clear Search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          )}
+        </div>
+      </div>
+
       <div className={styles.list}>
-        {students.map((student) => (
+        {filteredStudents.map((student) => (
           <div key={student.id} className={styles.item}>
             <div className={styles.info}>
               <span className={styles.name}>{student.name}</span>
@@ -262,6 +295,7 @@ export default function ManagePage() {
                   value={editClassroom} 
                   onChange={(e) => setEditClassroom(e.target.value)}
                 >
+                  <option value="">(None / Unknown Classroom)</option>
                   <option value="GAC">GAC</option>
                   <option value="INT">INT</option>
                 </select>
@@ -272,6 +306,7 @@ export default function ManagePage() {
                   value={editWorkshop} 
                   onChange={(e) => setEditWorkshop(e.target.value)}
                 >
+                  <option value="">(None / Unknown Workshop)</option>
                   <option value="Music">Music</option>
                   <option value="Cinema">Cinema</option>
                   <option value="Art">Art</option>
@@ -284,6 +319,7 @@ export default function ManagePage() {
                   value={editSpecialization} 
                   onChange={(e) => setEditSpecialization(e.target.value)}
                 >
+                  <option value="">(None / Unknown Specialization)</option>
                   <option value="Debate">Debate</option>
                   <option value="Mechatronics">Mechatronics</option>
                   <option value="Business">Business</option>

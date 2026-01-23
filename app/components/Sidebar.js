@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import styles from "./Sidebar.module.css";
 
 const Icons = {
@@ -16,11 +17,33 @@ const Icons = {
   ),
   Info: () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+  ),
+  ChevronLeft: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+  ),
+  ChevronRight: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
   )
 };
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("sidebarCollapsed");
+    if (saved !== null) {
+      setIsCollapsed(JSON.parse(saved));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("sidebarCollapsed", JSON.stringify(isCollapsed));
+    document.documentElement.style.setProperty(
+      "--current-sidebar-width",
+      isCollapsed ? "var(--sidebar-collapsed-width)" : "var(--sidebar-width)"
+    );
+  }, [isCollapsed]);
 
   const links = [
     { name: "Record", href: "/record", icon: Icons.Record },
@@ -30,8 +53,17 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className={styles.sidebar}>
-      <div className={styles.logo}>Attendance</div>
+    <aside className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ""}`}>
+      <div className={styles.header}>
+        {!isCollapsed && <div className={styles.logo}>Attendance</div>}
+        <button 
+          className={styles.toggleBtn} 
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+        >
+          {isCollapsed ? <Icons.ChevronRight /> : <Icons.ChevronLeft />}
+        </button>
+      </div>
       <nav className={styles.nav}>
         {links.map((link) => {
           const Icon = link.icon;
@@ -41,9 +73,10 @@ export default function Sidebar() {
               key={link.href}
               href={link.href}
               className={styles.link + (isActive ? " " + styles.active : "")}
+              title={isCollapsed ? link.name : ""}
             >
               <span className={styles.icon}><Icon /></span>
-              {link.name}
+              {!isCollapsed && <span>{link.name}</span>}
             </Link>
           );
         })}

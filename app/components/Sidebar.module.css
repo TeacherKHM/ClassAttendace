@@ -1,21 +1,53 @@
 .sidebar {
-  width: var(--sidebar-width);
+  width: var(--current-sidebar-width);
   height: 100vh;
   background-color: var(--secondary);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  padding: 2rem 1rem;
+  padding: 1.5rem 0.75rem;
   position: fixed;
   left: 0;
   top: 0;
+  transition: width 0.3s ease;
+  z-index: 1000;
+}
+
+.collapsed {
+  padding: 1.5rem 0.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+  padding: 0 0.5rem;
+  min-height: 2.5rem;
 }
 
 .logo {
   font-size: 1.5rem;
   font-weight: bold;
-  margin-bottom: 3rem;
-  padding-left: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.toggleBtn {
+  background: transparent;
+  border: none;
+  color: var(--foreground);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.toggleBtn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .nav {
@@ -27,11 +59,13 @@
 .link {
   display: flex;
   align-items: center;
-  padding: 1rem;
+  padding: 0.75rem;
   border-radius: 12px;
   color: var(--foreground);
-  transition: background-color 0.2s;
+  transition: all 0.2s;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .link:hover {
@@ -49,4 +83,12 @@
 
 .icon {
   margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+}
+
+.collapsed .icon {
+  margin-right: 0;
 }
