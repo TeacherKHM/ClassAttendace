@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
-import { getStudents, getAttendanceForDate, saveAttendanceForDate } from "@/lib/storage";
+import { getAttendanceForDate, saveAttendanceForDate } from "@/lib/storage";
+import { useData } from "@/app/context/DataContext";
 
 export default function RecordPage() {
-  const [students, setStudents] = useState([]);
+  const { students, loading: contextLoading } = useData();
   const [date, setDate] = useState("");
   const [attendance, setAttendance] = useState({});
   const [isClient, setIsClient] = useState(false);
@@ -13,15 +14,8 @@ export default function RecordPage() {
 
   useEffect(() => {
     setIsClient(true);
-    const loadInitialData = async () => {
-      const today = new Date().toISOString().split("T")[0];
-      setDate(today);
-      const studentData = await getStudents();
-      setStudents(studentData);
-      const savedData = await getAttendanceForDate(today);
-      setAttendance(savedData || {});
-    };
-    loadInitialData();
+    const today = new Date().toISOString().split("T")[0];
+    setDate(today);
   }, []);
 
   useEffect(() => {
@@ -48,7 +42,11 @@ export default function RecordPage() {
     setTimeout(() => setSaved(false), 2000);
   };
 
-  if (!isClient) return null; // Prevent hydration mismatch
+  if (!isClient || contextLoading) return (
+    <div className={styles.container}>
+      <h1 className={styles.title}>Loading students...</h1>
+    </div>
+  );
 
   return (
     <div className={styles.container}>

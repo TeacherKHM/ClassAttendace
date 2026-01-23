@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import { getStudents, saveStudents } from "@/lib/storage";
+import { useData } from "@/app/context/DataContext";
 
 export default function ManagePage() {
-  const [students, setStudents] = useState([]);
+  const { students, refreshData, loading: contextLoading } = useData();
   
   // Add Form State
   const [newName, setNewName] = useState("");
@@ -29,11 +30,6 @@ export default function ManagePage() {
 
   useEffect(() => {
     setIsClient(true);
-    const loadStudents = async () => {
-      const data = await getStudents();
-      setStudents(data);
-    };
-    loadStudents();
   }, []);
 
   const filteredStudents = students.filter((student) => {
@@ -58,9 +54,7 @@ export default function ManagePage() {
       preceptor: preceptor.trim()
     };
     await saveStudents([newStudent]);
-    // Refresh students list after adding to get the new UUID from Supabase
-    const data = await getStudents();
-    setStudents(data);
+    await refreshData();
     
     // Reset Form
     setNewName("");
@@ -78,15 +72,14 @@ export default function ManagePage() {
 
     const newStudentsData = names.map((name) => ({
       name: name,
-      classroom: "GAC",
-      workshop: "Music",
-      specialization: "Debate",
+      classroom: "",
+      workshop: "",
+      specialization: "",
       preceptor: ""
     }));
 
     await saveStudents(newStudentsData);
-    const data = await getStudents();
-    setStudents(data);
+    await refreshData();
     setBulkList("");
     setMode("single");
   };
@@ -123,15 +116,16 @@ export default function ManagePage() {
         preceptor: editPreceptor.trim()
       };
 
-    const updated = students.map((s) =>
-      s.id === editingStudent.id ? updatedStudent : s
-    );
-    setStudents(updated);
     await saveStudents([updatedStudent]);
+    await refreshData();
     setEditingStudent(null);
   };
 
-  if (!isClient) return null;
+  if (!isClient || contextLoading) return (
+    <div className={styles.container}>
+      <h1 className={styles.title}>Loading students...</h1>
+    </div>
+  );
 
   return (
     <div className={styles.container}>

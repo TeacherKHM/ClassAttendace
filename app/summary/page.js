@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
-import { getStudents, getAttendance, getPreceptoria } from "@/lib/storage";
+import { useData } from "@/app/context/DataContext";
 import CalendarView from "./CalendarView";
 
 export default function SummaryPage() {
-  const [data, setData] = useState({ students: [], records: {}, dates: [], preceptoria: {} });
+  const { students, attendance: records, preceptoria, loading: contextLoading } = useData();
   const [isClient, setIsClient] = useState(false);
   const [viewMode, setViewMode] = useState("matrix"); // "matrix" | "calendar"
   
@@ -15,22 +15,15 @@ export default function SummaryPage() {
 
   useEffect(() => {
     setIsClient(true);
-    const fetchData = async () => {
-      const students = await getStudents();
-      const records = await getAttendance();
-      const preceptoria = await getPreceptoria();
-      const dates = Object.keys(records).sort().reverse();
-      
-      // Default: This Month
-      const today = new Date();
-      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-      const lastDay = today.toISOString().split('T')[0];
-
-      setData({ students, records, dates, preceptoria });
-      setDateRange({ start: firstDay, end: lastDay });
-    };
-    fetchData();
+    // Default: This Month
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+    const lastDay = today.toISOString().split('T')[0];
+    setDateRange({ start: firstDay, end: lastDay });
   }, []);
+
+  const dates = Object.keys(records).sort().reverse();
+  const data = { students, records, dates, preceptoria };
 
   const getFilteredDates = () => {
     return data.dates.filter(date => date >= dateRange.start && date <= dateRange.end);
@@ -118,7 +111,11 @@ export default function SummaryPage() {
     document.body.removeChild(link);
   };
 
-  if (!isClient) return null;
+  if (!isClient || contextLoading) return (
+    <div className={styles.container}>
+      <h1 className={styles.title}>Loading summary...</h1>
+    </div>
+  );
   const filteredDates = getFilteredDates();
 
   return (
