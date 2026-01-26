@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import { useData } from "@/app/context/DataContext";
-import CalendarView from "./CalendarView";
+import DailyTables from "./DailyTables";
 
 export default function SummaryPage() {
   const { students, attendance: records, preceptoria, loading: contextLoading } = useData();
   const [isClient, setIsClient] = useState(false);
-  const [viewMode, setViewMode] = useState("matrix"); // "matrix" | "calendar"
+  const [viewMode, setViewMode] = useState("matrix"); // "matrix" | "daily"
   
   // Date Range State
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
@@ -110,6 +110,45 @@ export default function SummaryPage() {
     link.click();
     document.body.removeChild(link);
   };
+  const handleCopyForSheets = () => {
+    const filteredDates = getFilteredDates();
+    const headers = [
+      "Name", "ID", "Classroom", "Workshop", "Spec", 
+      "Student Sess", "Family Sess", "Last Sess Date",
+      "Present", "Late", "Absent", "Justified", 
+      ...filteredDates
+    ];
+    
+    const rows = data.students.map(student => {
+      const attStats = getStats(student.id, filteredDates);
+      const preStats = getPreceptoriaStats(student.id);
+      const attendance = filteredDates.map(date => data.records[date]?.[student.id] || "-");
+      
+      return [
+        student.name,
+        student.id,
+        student.classroom || "-",
+        student.workshop || "-",
+        student.specialization || "-",
+        preStats.studentSessions,
+        preStats.familySessions,
+        preStats.lastStudentSession || "Never",
+        attStats.Present,
+        attStats.Late,
+        attStats.Absent,
+        attStats.Justified,
+        ...attendance
+      ];
+    });
+
+    const tsvContent = [headers, ...rows].map(row => row.join("\t")).join("\n");
+    navigator.clipboard.writeText(tsvContent).then(() => {
+      alert("Formatted data copied! You can now paste it directly into Google Sheets.");
+    }).catch(err => {
+      console.error("Failed to copy data: ", err);
+      alert("Failed to copy data. Please check console for errors.");
+    });
+  };
 
   if (!isClient || contextLoading) return (
     <div className={styles.container}>
@@ -132,21 +171,24 @@ export default function SummaryPage() {
               Matrix Report
             </button>
             <button 
-              className={`${styles.toggleButton} ${viewMode === "calendar" ? styles.active : ""}`}
-              onClick={() => setViewMode("calendar")}
+              className={`${styles.toggleButton} ${viewMode === "daily" ? styles.active : ""}`}
+              onClick={() => setViewMode("daily")}
             >
-              Calendar
+              Daily List
             </button>
           </div>
           <button className={styles.exportButton} onClick={handleExport}>
             Export CSV
           </button>
+          <button className={`${styles.exportButton} ${styles.copyButton}`} onClick={handleCopyForSheets}>
+            Copy for Sheets
+          </button>
         </div>
       </div>
 
       <div className={styles.filterBar}>
-        <label>From: <input type="date" value={dateRange.start} onChange={e => setDateRange({...dateRange, start: e.target.value})} /></label>
-        <label>To: <input type="date" value={dateRange.end} onChange={e => setDateRange({...dateRange, end: e.target.value})} /></label>
+        <label>From: <input type="date" value={dateRange.start} max={new Date().toISOString().split("T")[0]} onChange={e => setDateRange({...dateRange, start: e.target.value})} /></label>
+        <label>To: <input type="date" value={dateRange.end} max={new Date().toISOString().split("T")[0]} onChange={e => setDateRange({...dateRange, end: e.target.value})} /></label>
       </div>
 
       {viewMode === "matrix" ? (
@@ -212,7 +254,7 @@ export default function SummaryPage() {
           </table>
         </div>
       ) : (
-        <CalendarView data={data.records} students={data.students} />
+        <DailyTables dates={filteredDates} records={data.records} students={data.students} />
       )}
     </div>
   );

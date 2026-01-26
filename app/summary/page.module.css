@@ -57,6 +57,16 @@
   cursor: pointer;
 }
 
+.copyButton {
+  background-color: var(--secondary);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.copyButton:hover {
+  background-color: rgba(0, 122, 255, 0.05);
+}
+
 .filterBar {
   display: flex;
   gap: 2rem;

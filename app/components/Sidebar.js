@@ -18,6 +18,9 @@ const Icons = {
   Info: () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
   ),
+  Social: () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+  ),
   ChevronLeft: () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
   ),
@@ -50,6 +53,7 @@ export default function Sidebar() {
     { name: "Edit / Add", href: "/manage", icon: Icons.Edit },
     { name: "Summary", href: "/summary", icon: Icons.Summary },
     { name: "Preceptoría", href: "/preceptoria", icon: Icons.Info },
+    { name: "Social Action", href: "/social-action", icon: Icons.Social },
   ];
 
   return (

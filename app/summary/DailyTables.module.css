@@ -1,0 +1,127 @@
+.tableWrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--background);
+  max-width: 100%;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dayTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+  min-width: 600px;
+}
+
+.dayTable th {
+  padding: 1rem;
+  background: var(--secondary);
+  font-weight: 700;
+  color: var(--foreground);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.dayTable td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.dayTable tr:last-child td {
+  border-bottom: none;
+}
+
+/* Sticky First Column */
+.stickyCol {
+  position: sticky;
+  left: 0;
+  background: var(--background);
+  z-index: 20;
+  border-right: 2px solid var(--border);
+  min-width: 155px;
+}
+
+.dayTable th.stickyCol {
+  z-index: 30;
+  background: var(--secondary);
+}
+
+.studentName {
+  font-weight: 600;
+  color: var(--foreground);
+  font-size: 1rem;
+}
+
+.classroom {
+  color: #666;
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+
+.statusCell {
+  text-align: center;
+}
+
+.statusBadge {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin: 0 auto;
+}
+
+.statusBadge.present {
+  background: rgba(52, 199, 89, 0.2);
+  color: var(--success);
+}
+
+.statusBadge.late {
+  background: rgba(255, 204, 0, 0.2);
+  color: #b38f00;
+}
+
+.statusBadge.absent {
+  background: rgba(255, 59, 48, 0.2);
+  color: var(--danger);
+}
+
+.statusBadge.justified {
+  background: rgba(0, 122, 255, 0.2);
+  color: var(--primary);
+}
+
+.empty {
+  color: #ccc;
+  font-weight: 400;
+}
+
+.noData {
+  text-align: center;
+  padding: 4rem;
+  color: #666;
+  font-style: italic;
+  font-size: 1.1rem;
+  background: var(--secondary);
+  border-radius: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .stickyCol { background: var(--background); }
+  .dayTable th.stickyCol { background: var(--secondary); }
+  .classroom { color: #999; }
+}

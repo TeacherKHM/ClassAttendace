@@ -57,6 +57,7 @@ export default function RecordPage() {
             type="date"
             className={styles.dateInput}
             value={date}
+            max={new Date().toISOString().split("T")[0]}
             onChange={(e) => setDate(e.target.value)}
           />
           <button className={styles.saveButton} onClick={handleSave}>

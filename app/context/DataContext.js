@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { getStudents, getAttendance, getPreceptoria } from "@/lib/storage";
+import { getStudents, getAttendance, getPreceptoria, getSocialAction } from "@/lib/storage";
 
 const DataContext = createContext();
 
@@ -9,19 +9,22 @@ export function DataProvider({ children }) {
   const [students, setStudents] = useState([]);
   const [attendance, setAttendance] = useState({});
   const [preceptoria, setPreceptoria] = useState({});
+  const [socialAction, setSocialAction] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const refreshData = useCallback(async () => {
     try {
-      const [studentData, attendanceData, preceptoriaData] = await Promise.all([
+      const [studentData, attendanceData, preceptoriaData, socialActionData] = await Promise.all([
         getStudents(),
         getAttendance(),
-        getPreceptoria()
+        getPreceptoria(),
+        getSocialAction()
       ]);
       setStudents(studentData);
       setAttendance(attendanceData);
       setPreceptoria(preceptoriaData);
+      setSocialAction(socialActionData);
       setError(null);
     } catch (err) {
       console.error("Error fetching data in context:", err);
@@ -40,6 +43,7 @@ export function DataProvider({ children }) {
     students,
     attendance,
     preceptoria,
+    socialAction,
     loading,
     error,
     refreshData,

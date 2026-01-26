@@ -1,0 +1,156 @@
+.container {
+  padding: 1rem;
+  max-width: 100%;
+  margin: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+}
+
+.copyButton {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.copyButton:hover {
+  opacity: 0.9;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.tableContainer {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th {
+  padding: 1rem;
+  border-bottom: 2px solid var(--border);
+  color: var(--foreground);
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--secondary);
+}
+
+.table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.studentName {
+  font-weight: 500;
+  min-width: 150px;
+}
+
+.input, .numberInput {
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.input:focus, .numberInput:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.input {
+  width: 100%;
+  min-width: 180px;
+}
+
+.numberInput {
+  width: 60px;
+  text-align: center;
+}
+
+/* Remove number input spinners */
+.numberInput::-webkit-outer-spin-button,
+.numberInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.numberInput {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.center {
+  text-align: center;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.totalHours {
+  font-weight: 700;
+  color: var(--primary);
+  text-align: center;
+}
+
+.statusCell {
+  font-size: 0.85rem;
+  min-width: 80px;
+  text-align: right;
+}
+
+.saving {
+  color: #666;
+  font-style: italic;
+}
+
+.saved {
+  color: var(--success);
+  font-weight: 500;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2rem;
+  color: var(--foreground);
+}
