@@ -3,13 +3,8 @@
 import styles from "./DailyTables.module.css";
 
 export default function DailyTables({ dates, records, students }) {
-  // Filter students who have at least one record in the given dates
-  const studentsWithRecords = students.filter(student => 
-    dates.some(date => records[date]?.[student.id])
-  );
-
-  if (studentsWithRecords.length === 0) {
-    return <div className={styles.noData}>No attendance records found for the selected range.</div>;
+  if (students.length === 0) {
+    return <div className={styles.noData}>No students found.</div>;
   }
 
   return (
@@ -26,7 +21,7 @@ export default function DailyTables({ dates, records, students }) {
           </tr>
         </thead>
         <tbody>
-          {studentsWithRecords.map((student) => (
+          {students.map((student) => (
             <tr key={student.id}>
               <td className={styles.stickyCol}>
                 <div className={styles.studentName}>{student.name}</div>
